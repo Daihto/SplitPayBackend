@@ -1,6 +1,5 @@
 package com.example.testapi.controller;
 
-import com.example.testapi.model.LoginRequest;
 import com.example.testapi.model.User;
 import com.example.testapi.service.AuthService;
 import org.springframework.web.bind.annotation.*;
