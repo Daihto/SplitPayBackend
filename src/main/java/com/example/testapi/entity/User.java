@@ -29,6 +29,9 @@ public class User {
 	@Column(nullable = false)
 	private String password;
 
+	@Column(name = "avatar_url")
+	private String avatarUrl;
+
 	@ManyToMany(mappedBy = "members")
 	private Set<Group> groups = new HashSet<>();
 
@@ -74,6 +77,14 @@ public class User {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getAvatarUrl() {
+		return avatarUrl;
+	}
+
+	public void setAvatarUrl(String avatarUrl) {
+		this.avatarUrl = avatarUrl;
 	}
 
 	public Set<Group> getGroups() {
