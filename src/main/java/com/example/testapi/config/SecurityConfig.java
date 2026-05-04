@@ -54,7 +54,10 @@ public class SecurityConfig {
                         // auth endpoints
                         .requestMatchers("/api/auth/**").permitAll()
 
-                        // EVERYTHING else still allowed for now (debug mode)
+                        // health check endpoint
+                        .requestMatchers(HttpMethod.GET, "/").permitAll()
+
+                        // ANYTHING else still allowed for now (debug mode)
                         .anyRequest().permitAll()
                 )
                 .authenticationProvider(authenticationProvider())
