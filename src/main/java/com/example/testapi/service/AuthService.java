@@ -12,9 +12,9 @@ import com.example.testapi.security.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class AuthService {
@@ -47,24 +47,53 @@ public class AuthService {
 
         userRepository.save(user);
 
-        return new UserSummaryDto(user.getId(), user.getName(), user.getEmail());
+        return new UserSummaryDto(
+                user.getId(),
+                user.getName(),
+                user.getEmail()
+        );
     }
 
     @Transactional(readOnly = true)
     public AuthResponse login(LoginRequest request) {
         try {
+            System.out.println("LOGIN START: " + request.getEmail());
+
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
             );
 
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            System.out.println("AUTH SUCCESS");
+
+            CustomUserDetails userDetails =
+                    (CustomUserDetails) authentication.getPrincipal();
+
             User user = userRepository.findById(userDetails.getId())
-                    .orElseThrow(() -> new BadRequestException("Invalid email or password"));
+                    .orElseThrow(() ->
+                            new BadRequestException("Invalid email or password")
+                    );
+
+            System.out.println("USER FETCHED");
 
             String token = jwtService.generateToken(userDetails);
-            UserSummaryDto userDto = new UserSummaryDto(user.getId(), user.getName(), user.getEmail());
+
+            System.out.println("TOKEN GENERATED");
+
+            UserSummaryDto userDto = new UserSummaryDto(
+                    user.getId(),
+                    user.getName(),
+                    user.getEmail()
+            );
+
+            System.out.println("LOGIN END");
+
             return new AuthResponse(token, userDto);
+
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new BadRequestException("Invalid email or password");
         }
     }
